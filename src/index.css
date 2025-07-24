@@ -8,35 +8,53 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Japanese-inspired color palette */
+    --background: 218 50% 98%;
+    --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Indigo blue inspired by traditional Japanese ink */
+    --primary: 230 35% 25%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Soft sakura pink accent */
+    --secondary: 340 30% 95%;
+    --secondary-foreground: 230 35% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 218 30% 96%;
+    --muted-foreground: 215 15% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Subtle teal accent */
+    --accent: 180 25% 90%;
+    --accent-foreground: 180 30% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Success green for correct answers */
+    --success: 140 45% 45%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Error red for incorrect answers */
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    --border: 218 20% 88%;
+    --input: 218 20% 94%;
+    --ring: 230 35% 25%;
+
+    /* Japanese-style subtle gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(230 35% 25%), hsl(220 40% 35%));
+    --gradient-accent: linear-gradient(135deg, hsl(340 30% 95%), hsl(330 25% 92%));
+    --gradient-success: linear-gradient(135deg, hsl(140 45% 45%), hsl(130 50% 40%));
+
+    /* Elegant shadows */
+    --shadow-soft: 0 4px 20px -8px hsl(230 35% 25% / 0.15);
+    --shadow-medium: 0 8px 30px -12px hsl(230 35% 25% / 0.25);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 

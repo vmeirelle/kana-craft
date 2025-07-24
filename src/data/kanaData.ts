@@ -86,5 +86,5 @@ export const rowNames = {
   wa: "WA-line (わ・を・ん)",
 } as const;
 
-export type QuizMode = "hiragana" | "katakana" | "mixed";
+export type KanaMode = "hiragana" | "katakana" | "mixed";
 export type KanaRow = keyof typeof rowNames;

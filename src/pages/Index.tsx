@@ -1,98 +1,99 @@
-import { useState } from "react";
-import { useQuizState } from "@/hooks/useQuizState";
-import { QuizCard } from "@/components/QuizCard";
-import { QuizSettings } from "@/components/QuizSettings";
-import { QuizStats } from "@/components/QuizStats";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Settings, BarChart3 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useQuizSettings } from "@/hooks/useQuizSettings";
+import { useQuizEngine } from "@/hooks/useQuizEngine";
+import { SettingsScreen } from "@/components/SettingsScreen";
+import { KanaQuizCard } from "@/components/KanaQuizCard";
+import { KanjiQuizCard } from "@/components/KanjiQuizCard";
+import { ResultsScreen } from "@/components/ResultsScreen";
+
+type AppState = "settings" | "quiz" | "results";
 
 const Index = () => {
-  const {
-    settings,
-    currentQuestion,
-    userAnswer,
-    stats,
-    showResult,
-    lastResult,
-    setUserAnswer,
-    submitAnswer,
-    startNewQuestion,
-    resetQuiz,
-    updateSettings,
-  } = useQuizState();
+  const { settings, updateSettings, isReady } = useQuizSettings();
+  const quizEngine = useQuizEngine(settings);
+  const [appState, setAppState] = useState<AppState>("settings");
 
-  const [activeTab, setActiveTab] = useState("quiz");
+  // Reset to settings when quiz is not active
+  useEffect(() => {
+    if (!quizEngine.isQuizActive && !quizEngine.isQuizComplete) {
+      setAppState("settings");
+    } else if (quizEngine.isQuizComplete) {
+      setAppState("results");
+    } else if (quizEngine.isQuizActive) {
+      setAppState("quiz");
+    }
+  }, [quizEngine.isQuizActive, quizEngine.isQuizComplete]);
 
-  const handleNext = () => {
-    startNewQuestion();
+  const handleStartQuiz = () => {
+    quizEngine.startQuiz();
+    setAppState("quiz");
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-secondary/20">
-      <div className="container max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <GraduationCap className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold text-primary">Kana Quiz</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Master Japanese hiragana and katakana characters
-          </p>
-        </div>
+  const handleResetToSettings = () => {
+    quizEngine.resetQuiz();
+    setAppState("settings");
+  };
 
-        {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="quiz" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Quiz
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Settings
-            </TabsTrigger>
-            <TabsTrigger value="stats" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Stats
-            </TabsTrigger>
-          </TabsList>
+  const handleRestartQuiz = () => {
+    quizEngine.startQuiz();
+    setAppState("quiz");
+  };
 
-          <TabsContent value="quiz" className="space-y-6">
-            <QuizCard
-              question={currentQuestion}
-              userAnswer={userAnswer}
-              onAnswerChange={setUserAnswer}
-              onSubmit={submitAnswer}
-              onNext={handleNext}
-              onReset={resetQuiz}
-              showResult={showResult}
-              lastResult={lastResult}
-            />
-            
-            {/* Quick Stats */}
-            {stats.total > 0 && (
-              <div className="text-center text-sm text-muted-foreground">
-                Score: {stats.correct}/{stats.total} ({Math.round((stats.correct / stats.total) * 100)}%)
-              </div>
-            )}
-          </TabsContent>
+  if (!isReady) {
+    return <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-secondary/20" />;
+  }
 
-          <TabsContent value="settings">
-            <QuizSettings
-              settings={settings}
-              onSettingsChange={updateSettings}
-            />
-          </TabsContent>
+  if (appState === "settings") {
+    return (
+      <SettingsScreen
+        settings={settings}
+        onSettingsChange={updateSettings}
+        onStartQuiz={handleStartQuiz}
+      />
+    );
+  }
 
-          <TabsContent value="stats">
-            <QuizStats stats={stats} />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
+  if (appState === "results") {
+    return (
+      <ResultsScreen
+        stats={quizEngine.stats}
+        onRestart={handleRestartQuiz}
+        onBackToSettings={handleResetToSettings}
+      />
+    );
+  }
+
+  if (appState === "quiz" && quizEngine.currentQuestion) {
+    if (settings.quizType === "kana") {
+      return (
+        <KanaQuizCard
+          question={quizEngine.currentQuestion}
+          userAnswer={quizEngine.userAnswer}
+          onAnswerChange={quizEngine.setUserAnswer}
+          onSubmit={quizEngine.submitAnswer}
+          onReset={handleResetToSettings}
+          showResult={quizEngine.showResult}
+          lastResult={quizEngine.lastResult}
+          questionsRemaining={quizEngine.questionsRemaining}
+        />
+      );
+    } else {
+      return (
+        <KanjiQuizCard
+          question={quizEngine.currentQuestion}
+          userAnswer={quizEngine.userAnswer}
+          onAnswerChange={quizEngine.setUserAnswer}
+          onSubmit={quizEngine.submitAnswer}
+          onReset={handleResetToSettings}
+          showResult={quizEngine.showResult}
+          lastResult={quizEngine.lastResult}
+          questionsRemaining={quizEngine.questionsRemaining}
+        />
+      );
+    }
+  }
+
+  return <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-secondary/20" />;
 };
 
 export default Index;
